@@ -1,0 +1,88 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { createPool } from 'mysql2/promise';
+import { createClient } from 'redis';
+
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+// MySQL connection pool
+const pool = createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+
+// Redis client
+const redisClient = createClient({
+  url: process.env.REDIS_URL
+});
+
+redisClient.on('error', err => console.log('Redis Client Error', err));
+await redisClient.connect();
+
+app.use(cors({origin: '*',credentials: true}))
+app.use(express.json());
+
+// Create student
+app.post('/api/students', async (req, res) => {
+  try {
+    const { name, age, class: className } = req.body;
+    const [result] = await pool.execute(
+      'INSERT INTO students (name, age, class) VALUES (?, ?, ?)',
+      [name, age, className]
+    );
+    
+    await redisClient.del('students');
+    res.status(201).json({ id: result.insertId });
+  } catch (error) {
+    console.error('Error creating student:', error);
+    res.status(500).json({ error: 'Failed to create student' });
+  }
+});
+
+// Get all students
+app.get('/api/students', async (req, res) => {
+  try {
+    // Try to get from cache first
+    const cachedStudents = await redisClient.get('students');
+    if (cachedStudents) {
+      return res.json(JSON.parse(cachedStudents));
+    }
+
+    const [rows] = await pool.execute('SELECT * FROM students ORDER BY created_at DESC');
+    
+    // Cache the results
+    await redisClient.set('students', JSON.stringify(rows), {
+      EX: 300 // Cache for 5 minutes
+    });
+    
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching students:', error);
+    res.status(500).json({ error: 'Failed to fetch students' });
+  }
+});
+
+// Delete student
+app.delete('/api/students/:id', async (req, res) => {
+  try {
+    await pool.execute('DELETE FROM students WHERE id = ?', [req.params.id]);
+    await redisClient.del('students');
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting student:', error);
+    res.status(500).json({ error: 'Failed to delete student' });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});

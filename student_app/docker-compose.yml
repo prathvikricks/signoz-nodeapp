@@ -1,0 +1,48 @@
+version: '3.3'
+
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    expose:
+      - "80"
+    depends_on:
+      - backend
+    env_file:
+      - ./frontend/.env
+    networks:
+      - shared
+
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+    networks:
+      - shared
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - shared
+
+volumes:
+  redis_data:
+
+networks:
+  shared:
+    name: shared
+    external: true
