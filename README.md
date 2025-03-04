@@ -79,9 +79,16 @@ Ensure that your security group allows inbound traffic to ports `4317` and `4318
 
 Start your Node.js application, and you should start seeing traces in SigNoz!
 
-```sh
-node src/index.js
+```bash
+docker-compose up -d --build
 ```
+## Visualize traces in signoz
+
+<img width="1470" alt="Screenshot 2025-03-04 at 3 52 36 PM" src="https://github.com/user-attachments/assets/e0a45924-4793-4e3c-937c-0db9907220f3" />
+<img width="1470" alt="Screenshot 2025-03-04 at 3 53 02 PM" src="https://github.com/user-attachments/assets/5b64e384-bea4-4afa-a3c9-15d94a99a5d5" />
+<img width="1470" alt="Screenshot 2025-03-04 at 3 53 11 PM" src="https://github.com/user-attachments/assets/431fc238-ad42-4d42-a987-e41db1613e1c" />
+
+
 
 ## Troubleshooting
 
