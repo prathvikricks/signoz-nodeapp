@@ -39,8 +39,22 @@ services:
     networks:
       - shared
 
+  mysql-school:
+    image: mysql:latest
+    container_name: mysql-school
+    restart: always
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - shared
+
 volumes:
   redis_data:
+  mysql_data:
 
 networks:
   shared:
