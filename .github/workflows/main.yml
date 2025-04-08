@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  APP_DIR: /home/ubuntu/docker/student-app
+  APP_DIR: /home/ubuntu/docker/student_app
   COMPOSE_FILE: docker-compose.yml
 
 jobs:
