@@ -30,5 +30,4 @@ jobs:
       - name: Run ASG Update Script on Server
         run: |
           echo "Running ASG update script from: ${{ env.ASG_SCRIPT_PATH }}"
-          chmod +x ${{ env.ASG_SCRIPT_PATH }}
-          ${{ env.ASG_SCRIPT_PATH }}
+          sudo ./env.ASG_SCRIPT_PATH 
