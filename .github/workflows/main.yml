@@ -20,8 +20,8 @@ jobs:
 
       - name: Stop Existing Containers
         working-directory: ${{ env.APP_DIR }}
-        run: docker-compose -f $COMPOSE_FILE down || true
+        run: docker compose -f $COMPOSE_FILE down || true
 
       - name: Build and Start Containers
         working-directory: ${{ env.APP_DIR }}
-        run: docker-compose -f $COMPOSE_FILE up -d --build
+        run: docker compose -f $COMPOSE_FILE up -d --build
