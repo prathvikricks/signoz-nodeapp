@@ -8,6 +8,7 @@ on:
 env:
   APP_DIR: /home/ubuntu/docker/student_app
   COMPOSE_FILE: docker-compose.yml
+  ASG_SCRIPT_PATH: /home/ubuntu/asg/update_asg.sh
 
 jobs:
   build-and-deploy:
@@ -26,7 +27,8 @@ jobs:
         working-directory: ${{ env.APP_DIR }}
         run: docker compose -f $COMPOSE_FILE up -d --build
 
-      - name: Run ASG Update Script
+      - name: Run ASG Update Script on Server
         run: |
-          chmod +x ./asg/update_asg.sh
-          ./asg/update_asg.sh
+          echo "Running ASG update script from: ${{ env.ASG_SCRIPT_PATH }}"
+          chmod +x ${{ env.ASG_SCRIPT_PATH }}
+          ${{ env.ASG_SCRIPT_PATH }}
