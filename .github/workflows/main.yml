@@ -11,7 +11,7 @@ env:
 
 jobs:
   build-and-deploy:
-    name: Build and Deploy with Docker Compose
+    name: Build and Deploy with Docker Compose + ASG Update
     runs-on: signoz
 
     steps:
@@ -25,3 +25,8 @@ jobs:
       - name: Build and Start Containers
         working-directory: ${{ env.APP_DIR }}
         run: docker compose -f $COMPOSE_FILE up -d --build
+
+      - name: Run ASG Update Script
+        run: |
+          chmod +x ./asg/update_asg.sh
+          ./asg/update_asg.sh
